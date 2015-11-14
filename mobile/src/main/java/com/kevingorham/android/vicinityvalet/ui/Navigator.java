@@ -232,6 +232,8 @@ public class Navigator implements NavigationView.OnNavigationItemSelectedListene
 				setActiveFragment(fragment);
 
 				String tag = String.valueOf(mCurrentSectionId);
+
+				//TODO: fix bug where last fragment doesn't exit the activity
 				mActivity.getSupportFragmentManager().beginTransaction()
 						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 						.replace(R.id.main_content, mActiveFragment, tag)
