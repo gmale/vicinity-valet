@@ -1,9 +1,16 @@
 <resources>
-	<!-- Default screen margins, per the Android Design guidelines. -->
-	<dimen name="activity_horizontal_margin">16dp</dimen>
-	<dimen name="activity_vertical_margin">16dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="card_margin">16dp</dimen>
 
-	<!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
+    <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
-	<dimen name="navigation_drawer_width">240dp</dimen>
+    <dimen name="navigation_drawer_width">240dp</dimen>
+
+
+    <!-- Navigation -->
+    <dimen name="drawer_header_layout_height">140dp</dimen>
+    <dimen name="drawer_header_subtitle_layout_height">56dp</dimen>
+    <dimen name="collapsing_toolbar_layout_height">300dp</dimen>
 </resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/primary_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_home"
+            android:title="@string/navigation_item_home"/>
+        <item
+            android:id="@+id/navigation_nfc"
+            android:title="@string/navigation_item_nfc"/>
+        <item
+            android:id="@+id/navigation_beacons"
+            android:title="@string/navigation_item_beacons"/>
+        <item
+            android:id="@+id/navigation_wifi"
+            android:title="@string/navigation_item_wifi"/>
+        <item
+            android:id="@+id/navigation_geofences"
+            android:title="@string/navigation_item_geofences" />
+    </group>
+
+</menu>
