@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -76,8 +77,12 @@ public class Navigator implements NavigationView.OnNavigationItemSelectedListene
 	}
 
 	private void initSections() {
-
 		navigationSectionMap = new SparseArray<>();
+		navigationSectionMap.put(R.id.navigation_home, R.layout.fragment_nav_home);
+		navigationSectionMap.put(R.id.navigation_beacons, R.layout.fragment_nav_beacons);
+		navigationSectionMap.put(R.id.navigation_geofences, R.layout.fragment_nav_geofences);
+		navigationSectionMap.put(R.id.navigation_nfc, R.layout.fragment_nav_nfc);
+		navigationSectionMap.put(R.id.navigation_wifi, R.layout.fragment_nav_wifi);
 	}
 
 
@@ -225,22 +230,42 @@ public class Navigator implements NavigationView.OnNavigationItemSelectedListene
 	}
 
 	private void applySelection() {
-		if (!hasValidSelection()) {
-			Fragment fragment = getFragmentForSection(mCurrentSectionId);
-			if (fragment != null) {
-				markSelectionValid();
-				setActiveFragment(fragment);
+		// if the section has already been applied, then there's nothing left to do
+		if (hasValidSelection())
+			return;
 
-				String tag = String.valueOf(mCurrentSectionId);
+		/* now, since the selection is dirty, we need to update the selected fragment */
 
-				//TODO: fix bug where last fragment doesn't exit the activity
-				mActivity.getSupportFragmentManager().beginTransaction()
-						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-						.replace(R.id.main_content, mActiveFragment, tag)
-						.addToBackStack(tag)
-						.commit();
+		String tag = String.valueOf(mCurrentSectionId);
+		FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+		Fragment fragment = fragmentManager.findFragmentByTag(tag);
+
+		if (fragment != null) {
+			// if the fragment exists, then no need to create it, just pop back to it so
+			// that repeatedly toggling between fragments doesn't create a giant basckstack
+			fragmentManager.popBackStackImmediate(tag, 0);
+			setActiveFragment(fragment);
+		} else {
+			// at this point, popping back to that fragment didn't happen
+			// So create a new one and then show it
+			fragment = createFragmentForSection(mCurrentSectionId);
+
+			FragmentTransaction transaction = fragmentManager.beginTransaction()
+					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+					.replace(R.id.main_content, fragment, tag);
+
+			// don't add the first fragment to the backstack
+			// otherwise, pressing back on that fragment will result in a blank screen
+			if (fragmentManager.getFragments() != null) {
+				transaction.addToBackStack(tag);
 			}
+
+			transaction.commit();
+			setActiveFragment(fragment);
 		}
+
+		// at this point, we have successfully applied the selection so remove the dirty flag
+		markSelectionValid();
 	}
 
 	private void invalidateSelection() {
@@ -257,25 +282,15 @@ public class Navigator implements NavigationView.OnNavigationItemSelectedListene
 	}
 
 	/**
-	 * Returns the fragment matching this menu item or null of the match cannot be determined.
+	 * Returns the fragment matching this menu item.
 	 *
-	 * @param drawerMenuItemId the ID from drawer.xml whose fragment we'd like to find or create
+	 * @param drawerMenuItemId the ID from drawer.xml whose fragment we'd like to create
 	 *
-	 * @return the cached version of the fragment that corresponds to the given ID or a new
-	 * instance
-	 * if the fragment manager cannot find the related fragment. Null is returned when the
-	 * drawerMenuItemId cannot be found withing drawer.xml
+	 * @return  a new instance of the fragment that corresponds to the given ID
 	 */
-	public Fragment getFragmentForSection(int drawerMenuItemId) {
-		Fragment existingFragment = mActivity.getSupportFragmentManager().findFragmentByTag(
-				String.valueOf(drawerMenuItemId)
-		);
-		if (existingFragment != null) {
-			return existingFragment;
-		}
-
-		//TODO: create fragments based on this ID
-		return MainContentFragment.newInstance(R.layout.fragment_nav_home);
+	public Fragment createFragmentForSection(int drawerMenuItemId) {
+		int layoutId = navigationSectionMap.get(drawerMenuItemId);
+		return MainContentFragment.newInstance(layoutId);
 	}
 
 
